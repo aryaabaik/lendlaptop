@@ -2,10 +2,18 @@
 
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// Redirect root ke login
-Route::get('/', fn() => redirect()->route('login'));
+// Redirect root sesuai status login
+Route::get('/', function () {
+    if (Auth::check()) {
+        return Auth::user()->role === 'admin'
+            ? redirect()->route('admin.dashboard')
+            : redirect()->route('user.dashboard');
+    }
+    return redirect()->route('login');
+});
 
 // Auth routes (dari Breeze, jangan dihapus)
 require __DIR__.'/auth.php';
