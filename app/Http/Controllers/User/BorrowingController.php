@@ -3,63 +3,97 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Borrowing;
+use App\Models\Laptop;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BorrowingController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display listing of user's borrowings.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $tab = $request->input('tab', 'active');
+        $query = Borrowing::with('laptop')->where('user_id', Auth::id());
+
+        if ($tab === 'active') {
+            $query->whereIn('status', ['approved', 'borrowed']);
+        } elseif ($tab === 'pending') {
+            $query->where('status', 'pending');
+        } // 'all' displays everything
+
+        $borrowings = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
+
+        return view('user.borrowings.index', compact('borrowings', 'tab'));
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Store a newly created borrowing request.
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'laptop_id'   => 'required|exists:laptops,id',
+            'borrow_date' => 'required|date|after_or_equal:today',
+            'return_date' => 'required|date|after_or_equal:borrow_date',
+            'purpose'     => 'required|string|max:500',
+        ]);
+
+        $laptop = Laptop::findOrFail($validated['laptop_id']);
+
+        // Pastikan laptop tersedia
+        if ($laptop->status !== 'tersedia') {
+            return redirect()->back()->with('error', 'Laptop tidak tersedia untuk dipinjam saat ini!');
+        }
+
+        // Buat data borrowing
+        Borrowing::create([
+            'user_id'       => Auth::id(),
+            'laptop_id'     => $validated['laptop_id'],
+            'borrower_name' => Auth::user()->name,
+            'borrow_date'   => $validated['borrow_date'],
+            'return_date'   => $validated['return_date'],
+            'purpose'       => $validated['purpose'],
+            'status'        => 'pending',
+        ]);
+
+        return redirect()->route('user.borrowings.index', ['tab' => 'pending'])
+            ->with('success', 'Pengajuan peminjaman berhasil dikirim. Menunggu persetujuan admin!');
     }
 
     /**
-     * Display the specified resource.
+     * Display detailed borrowing info.
      */
-    public function show(string $id)
+    public function show(Borrowing $borrowing)
     {
-        //
+        // Security check
+        if ($borrowing->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $borrowing->load(['laptop']);
+        return view('user.borrowings.show', compact('borrowing'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Cancel a pending borrowing request.
      */
-    public function edit(string $id)
+    public function destroy(Borrowing $borrowing)
     {
-        //
-    }
+        // Security check
+        if ($borrowing->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        if ($borrowing->status !== 'pending') {
+            return redirect()->back()->with('error', 'Hanya pengajuan berstatus PENDING yang dapat dibatalkan!');
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $borrowing->delete();
+
+        return redirect()->route('user.borrowings.index', ['tab' => 'pending'])
+            ->with('success', 'Pengajuan peminjaman berhasil dibatalkan.');
     }
 }

@@ -20,15 +20,21 @@ class DashboardController extends Controller
             'available' => Laptop::where('status', 'tersedia')->count(),
         ];
 
+        // Ambil peminjaman aktif yang sedang dibawa (status 'borrowed' atau 'approved')
         $activeBorrowings = Borrowing::with('laptop')
             ->where('user_id', $user->id)
             ->whereIn('status', ['approved','borrowed'])
-            ->latest()->take(5)->get();
+            ->latest()->get();
 
+        // Riwayat peminjaman terbaru
         $recentBorrowings = Borrowing::with('laptop')
             ->where('user_id', $user->id)
             ->latest()->take(5)->get();
 
-        return view('user.dashboard', compact('stats', 'activeBorrowings', 'recentBorrowings'));
+        // Ambil laptop preview (tersedia, 4 unit)
+        $availableLaptops = Laptop::where('status', 'tersedia')
+            ->latest()->take(4)->get();
+
+        return view('user.dashboard.index', compact('user', 'stats', 'activeBorrowings', 'recentBorrowings', 'availableLaptops'));
     }
 }

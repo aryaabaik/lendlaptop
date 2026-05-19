@@ -18,6 +18,20 @@ Route::get('/', function () {
 // Auth routes (dari Breeze, jangan dihapus)
 require __DIR__.'/auth.php';
 
+// Redirect /dashboard sesuai role (Breeze compatibility)
+Route::get('/dashboard', function () {
+    return Auth::user()->role === 'admin'
+        ? redirect()->route('admin.dashboard')
+        : redirect()->route('user.dashboard');
+})->middleware(['auth'])->name('dashboard');
+
+// Profile routes
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
 // Admin routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard',          [Admin\DashboardController::class, 'index'])->name('dashboard');

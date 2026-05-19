@@ -13,18 +13,9 @@ return new class extends Migration
     {
         Schema::create('laptops', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->string('code')->unique();
             $table->string('brand');
             $table->string('model');
-            $table->string('processor');
-            $table->integer('ram');
-            $table->string('storage');
-            $table->string('vga')->nullable();
-            $table->string('serial_number')->unique();
-            $table->enum('condition', ['baik', 'rusak_ringan', 'rusak_berat'])->default('baik');
-            $table->enum('status', ['tersedia', 'dipinjam', 'maintenance', 'rusak'])->default('tersedia');
-            $table->string('image')->nullable();
+            $table->enum('status', ['tersedia', 'dipinjam'])->default('tersedia');
             $table->timestamps();
         });
     }

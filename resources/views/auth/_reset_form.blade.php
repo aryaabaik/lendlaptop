@@ -1,4 +1,4 @@
-<!-- Steps -->
+{{-- Steps --}}
 <div class="steps">
   <div class="snum {{ session('status') ? 'done' : 'active' }}" id="s1">1</div>
   <span class="slbl {{ !session('status') ? 'active' : '' }}">Input Email</span>
@@ -8,28 +8,36 @@
 </div>
 
 @if(session('status'))
-<div class="success-box">
-  <div class="success-ico">
-    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+<div class="success-box" style="background: rgba(13, 159, 122, 0.05); border: 1px solid rgba(13, 159, 122, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+  <div class="success-ico" style="background: rgba(13, 159, 122, 0.1); border-color: rgba(13, 159, 122, 0.3);">
+    <i class="ti ti-mail-fast" style="font-size: 2rem; color: var(--teal);"></i>
   </div>
-  <h3>Email Terkirim!</h3>
-  <p>Link reset password telah dikirim ke email Anda. Periksa inbox atau folder spam.</p>
-  <br>
-  <button type="button" class="btn btn-primary" onclick="switchTab('login')">Kembali ke Login</button>
+  <h3 style="color: #0b7a5e;">Email Terkirim!</h3>
+  <p style="color: #0d9f7a; font-weight: 500;">{{ session('status') }}</p>
+  <p style="margin-top: 10px; font-size: 0.8rem;">Silakan periksa inbox atau folder spam email Anda.</p>
 </div>
-@else
+@endif
+
+@if(!session('status'))
 <form method="POST" action="{{ route('password.email') }}">
-@csrf
-<div class="field">
-  <label for="reset-email">Alamat Email</label>
-  <div class="iw">
-    <svg class="ic" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-    <input type="email" id="reset-email" name="email" value="{{ old('email') }}" placeholder="email@unibi.ac.id" required autofocus>
+  @csrf
+  <div class="field">
+    <label for="reset-email">Alamat Email</label>
+    <div class="iw">
+      <i class="ti ti-mail ic"></i>
+      <input type="email" id="reset-email" name="email" value="{{ old('email') }}" placeholder="username@unibi.ac.id" required autofocus>
+    </div>
+    @error('email')
+      <p class="ferr"><i class="ti ti-alert-circle"></i> {{ $message }}</p>
+    @enderror
   </div>
-  @error('email')<p class="ferr">{{ $message }}</p>@enderror
-</div>
-<button type="submit" class="btn btn-primary">Kirim Link Reset</button>
+  
+  <button type="submit" class="btn btn-primary" id="btn-reset-submit">
+    <i class="ti ti-mail-forward"></i> Kirim Link Reset
+  </button>
 </form>
 @endif
 
-<div class="flink" style="margin-top:14px">Ingat password? <a href="{{ route('login') }}" onclick="event.preventDefault();switchTab('login')">Masuk</a></div>
+<div class="flink" style="margin-top:20px">
+  <a href="{{ route('login') }}"><i class="ti ti-arrow-back-up"></i> Kembali ke Masuk</a>
+</div>
