@@ -43,6 +43,23 @@ class DatabaseSeeder extends Seeder
             ['brand'=>'HP','model'=>'EliteBook 840','status'=>'dipinjam','category_id'=>$catUltrabook->id],
             ['brand'=>'Dell','model'=>'Inspiron 15','status'=>'tersedia','category_id'=>$catWorkstation->id],
             ['brand'=>'Acer','model'=>'Aspire 5','status'=>'tersedia','category_id'=>$catUltrabook->id],
+            
+            // Tambahan laptop baru
+            ['brand'=>'Apple','model'=>'MacBook Air M2','status'=>'tersedia','category_id'=>$catUltrabook->id],
+            ['brand'=>'Apple','model'=>'MacBook Pro M3','status'=>'tersedia','category_id'=>$catWorkstation->id],
+            ['brand'=>'Lenovo','model'=>'Legion 5 Pro','status'=>'tersedia','category_id'=>$catGaming->id],
+            ['brand'=>'ASUS','model'=>'ROG Zephyrus G14','status'=>'tersedia','category_id'=>$catGaming->id],
+            ['brand'=>'HP','model'=>'Pavilion Aero 13','status'=>'tersedia','category_id'=>$catUltrabook->id],
+            ['brand'=>'Dell','model'=>'XPS 13 Plus','status'=>'tersedia','category_id'=>$catUltrabook->id],
+            ['brand'=>'MSI','model'=>'Katana GF66','status'=>'tersedia','category_id'=>$catGaming->id],
+            ['brand'=>'Lenovo','model'=>'ThinkPad X1 Carbon','status'=>'tersedia','category_id'=>$catUltrabook->id],
+            ['brand'=>'Acer','model'=>'Swift Go 14','status'=>'tersedia','category_id'=>$catUltrabook->id],
+            ['brand'=>'ASUS','model'=>'TUF Gaming A15','status'=>'tersedia','category_id'=>$catGaming->id],
+            ['brand'=>'HP','model'=>'Omen 16','status'=>'tersedia','category_id'=>$catGaming->id],
+            ['brand'=>'Dell','model'=>'Latitude 5430','status'=>'tersedia','category_id'=>$catWorkstation->id],
+            ['brand'=>'Lenovo','model'=>'Yoga Slim 7 Pro','status'=>'tersedia','category_id'=>$catUltrabook->id],
+            ['brand'=>'Gigabyte','model'=>'Aorus 15','status'=>'tersedia','category_id'=>$catGaming->id],
+            ['brand'=>'Acer','model'=>'Predator Helios 300','status'=>'tersedia','category_id'=>$catGaming->id],
         ];
         foreach ($laptops as $l) {
             Laptop::create($l);
@@ -135,10 +152,11 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
+        $laptopIds = Laptop::pluck('id')->toArray();
         foreach ($borrowings as $i => $data) {
             Borrowing::create(array_merge($data, [
                 'user_id'   => null,
-                'laptop_id' => ($i % 5) + 1,
+                'laptop_id' => $laptopIds[$i % count($laptopIds)],
             ]));
         }
     }

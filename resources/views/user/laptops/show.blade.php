@@ -1,491 +1,262 @@
 @extends('layouts.app')
 
-@section('title', $laptop->brand . ' ' . $laptop->model)
+@section('title', 'Ajukan Peminjaman — ' . $laptop->brand . ' ' . $laptop->model)
 
 @section('content')
 <style>
-/* ─── PREMIUM LAPTOP DETAIL STYLES ────────────────────────── */
-.detail-container {
-  max-width: 1200px;
-  margin: 104px auto 40px;
-  padding: 0 24px;
+/* ─── THEMING & CARD FORM STYLES ───────────────────────────── */
+:root {
+  --teal:      #0D9F7A;
+  --teal-dark: #0b8a6a;
+  --teal-dim:  rgba(13,159,122,.10);
+  --navy:      #0A1628;
+  --red:       #EF4444;
+  --amber:     #F59E0B;
+  --blue:      #3B82F6;
+  --text:      #1e293b;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --bg:        #f8fafc;
 }
 
-/* Back navigation */
-.back-nav {
+.form-wrapper {
+  max-width: 576px; /* max-w-xl */
+  margin: 0 auto;
+}
+
+/* Card: bg-white, rounded-xl, border border-gray-100 */
+.form-card {
+  background-color: #fff;
+  border-radius: 0.75rem; /* rounded-xl */
+  border: 1px solid #f3f4f6; /* border-gray-100 */
+  box-shadow: 0 4px 20px rgba(10, 22, 40, 0.03);
+  padding: 32px;
+}
+
+.form-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 24px;
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 16px;
+}
+
+.form-group {
   margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-}
-.back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--muted);
-  text-decoration: none;
-  font-size: .82rem;
-  font-weight: 600;
-  transition: color .2s;
-}
-.back-link:hover {
-  color: var(--teal);
 }
 
-/* Two Column Layout */
-.detail-layout {
-  display: grid;
-  grid-template-columns: 3.2fr 2.8fr;
-  gap: 32px;
-  align-items: start;
-}
-@media(max-width: 991px) {
-  .detail-layout {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Left Column */
-.left-col {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-.photo-card {
-  background: #fff;
-  border-radius: 1rem;
-  border: 1px solid #f1f5f9;
-  box-shadow: 0 1px 3px rgba(0,0,0,.02);
-  padding: 24px;
-  position: relative;
-}
-.big-img-box {
-  width: 100%;
-  height: 320px;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 5rem;
-  color: var(--teal);
-  overflow: hidden;
-}
-.big-img-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.detail-identity {
-  margin-top: 20px;
-}
-.identity-brand {
-  font-size: .8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--muted);
-  letter-spacing: .05em;
-}
-.identity-name {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--text);
-  margin: 4px 0 10px;
-  line-height: 1.2;
-}
-.identity-cat {
-  display: inline-block;
-  font-size: .72rem;
-  font-weight: 700;
-  color: var(--teal);
-  background: var(--teal-dim);
-  padding: 4px 12px;
-  border-radius: 6px;
-}
-
-.large-badge-pos {
-  position: absolute;
-  top: 36px;
-  right: 36px;
-  z-index: 5;
-}
-.large-badge {
-  font-size: .75rem;
-  font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 999px;
-  box-shadow: 0 4px 10px rgba(0,0,0,.05);
-}
-
-/* Right Column Cards */
-.right-col {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-.spec-card {
-  background: #fff;
-  border-radius: 1rem;
-  border: 1px solid #f1f5f9;
-  box-shadow: 0 1px 3px rgba(0,0,0,.02);
-  padding: 24px;
-}
-.card-title {
-  font-size: .85rem;
-  font-weight: 700;
-  color: var(--text);
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #f1f5f9;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.spec-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-@media(max-width: 480px) {
-  .spec-grid {
-    grid-template-columns: 1fr;
-  }
-}
-.spec-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-.spec-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  background: var(--teal-dim);
-  color: var(--teal);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .95rem;
-  flex-shrink: 0;
-}
-.spec-lbl {
-  font-size: .68rem;
-  color: var(--muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .02em;
-}
-.spec-val {
-  font-size: .8rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-top: 2px;
-  word-break: break-word;
-}
-
-/* Borrowing Action Card */
-.action-card {
-  background: #fff;
-  border-radius: 1rem;
-  border: 1px solid #f1f5f9;
-  box-shadow: 0 1px 3px rgba(0,0,0,.02);
-  padding: 24px;
-}
-
-/* Custom form elements */
-.f-label {
+.form-label {
   display: block;
-  font-size: .75rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: var(--muted);
+  color: var(--text);
   margin-bottom: 6px;
   text-transform: uppercase;
-  letter-spacing: .03em;
+  letter-spacing: 0.03em;
 }
-.f-input-wrapper {
+.form-label span {
+  color: var(--red);
+}
+
+/* Input: bg-gray-50 border-gray-200 rounded-lg px-4 py-2.5 + ikon di kiri */
+.input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
-.f-input-wrapper i {
+.input-wrapper i {
   position: absolute;
-  left: 14px;
-  color: #94a3b8;
-  font-size: 1.05rem;
+  left: 16px;
+  color: var(--muted);
+  font-size: 1.1rem;
   pointer-events: none;
 }
-.f-input {
+.input-control {
   width: 100%;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 8.5px 14px 8.5px 38px;
+  background-color: #f9fafb; /* bg-gray-50 */
+  border: 1px solid #e5e7eb; /* border-gray-200 */
+  border-radius: 0.5rem; /* rounded-lg */
+  padding: 10px 16px 10px 44px; /* px-4 py-2.5 */
   font-family: 'Inter', sans-serif;
-  font-size: .82rem;
+  font-size: 0.88rem;
   color: var(--text);
   outline: none;
-  transition: all .2s ease;
+  transition: all 0.2s ease;
 }
-.f-input:focus {
+.input-control:focus {
   border-color: var(--teal);
-  background: #fff;
+  background-color: #fff;
   box-shadow: 0 0 0 3px rgba(13,159,122,.12);
 }
+.input-control:disabled, .input-control[readonly] {
+  background-color: #f3f4f6;
+  color: var(--muted);
+  cursor: not-allowed;
+}
 
-.warning-card {
-  background: rgba(59, 130, 246, 0.04);
-  border: 1px solid rgba(59, 130, 246, 0.15);
-  border-radius: 10px;
-  padding: 16px;
-  color: #1e3a8a;
+/* Action Row Buttons */
+.btn-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+}
+.btn-submit {
+  flex: 1;
+  background-color: var(--teal); /* bg-[#0D9F7A] */
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 0.5rem; /* rounded-lg */
+  padding: 10px 20px; /* px-5 py-2.5 equivalent */
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+.btn-submit:hover {
+  background-color: var(--teal-dark); /* hover:bg-[#0b8a6a] */
+}
+
+.btn-back {
+  background-color: #fff;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 0.5rem; /* rounded-lg */
+  padding: 10px 20px; /* px-5 py-2.5 equivalent */
+  border: 1px solid #e5e7eb; /* border-gray-200 */
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.2s;
+}
+.btn-back:hover {
+  background-color: #f9fafb;
+}
+
+/* Info Box */
+.info-box-gray {
+  background-color: #f9fafb; /* bg-gray-50 */
+  border: 1px solid #f3f4f6; /* border-gray-100 */
+  border-radius: 0.5rem; /* rounded-lg */
+  padding: 14px 16px;
+  margin-top: 24px;
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  font-size: .8rem;
+  color: var(--muted);
+  font-size: 0.82rem;
   line-height: 1.4;
 }
-.warning-card i {
-  font-size: 1.2rem;
-  color: #3b82f6;
+.info-box-gray i {
+  color: var(--teal);
+  font-size: 1.25rem;
+  margin-top: 1px;
+}
+
+/* Error banner */
+.error-banner {
+  background-color: rgba(239,68,68,0.06);
+  border: 1px solid rgba(239,68,68,0.15);
+  border-radius: 0.5rem;
+  padding: 12px 16px;
+  color: var(--red);
+  font-size: 0.82rem;
+  margin-bottom: 20px;
+}
+.error-banner ul {
+  margin: 4px 0 0 16px;
+  padding: 0;
 }
 </style>
 
-<div class="detail-container">
+<div class="form-wrapper">
   
-  {{-- Back Navigation --}}
-  <div class="back-nav">
-    <a href="{{ route('user.laptops.index') }}" class="back-link">
-      <i class="ti ti-arrow-left"></i> Kembali ke Katalog
-    </a>
-  </div>
+  {{-- Card Form --}}
+  <div class="form-card">
+    <h1 class="form-title">Ajukan Peminjaman — {{ $laptop->brand }} {{ $laptop->model }}</h1>
 
-  <div class="detail-layout">
-    
-    {{-- ═══════════════════════════════════════════════════════════ --}}
-    {{--  KOLOM KIRI (3/5)                                          --}}
-    {{-- ═══════════════════════════════════════════════════════════ --}}
-    <div class="left-col">
-      
-      {{-- Photo & Title Card --}}
-      <article class="photo-card">
-        
-        {{-- Absolute Badge --}}
-        <div class="large-badge-pos">
-          @if($laptop->status === 'tersedia')
-            <span class="badge large-badge badge-teal">Tersedia</span>
-          @elseif($laptop->status === 'dipinjam')
-            <span class="badge large-badge badge-blue">Sedang Dipinjam</span>
-          @elseif($laptop->status === 'maintenance')
-            <span class="badge large-badge badge-amber">Dalam Perbaikan</span>
-          @else
-            <span class="badge large-badge badge-red">Rusak</span>
-          @endif
+    @if ($errors->any())
+      <div class="error-banner">
+        <strong>Terjadi kesalahan pengisian form:</strong>
+        <ul>
+          @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
+
+    @if (session('error'))
+      <div class="error-banner">
+        {{ session('error') }}
+      </div>
+    @endif
+
+    <form method="POST" action="{{ route('user.borrowings.store') }}" id="borrow-form">
+      @csrf
+      <input type="hidden" name="laptop_id" value="{{ $laptop->id }}">
+
+      {{-- Nama Laptop (Read-Only) --}}
+      <div class="form-group">
+        <label class="form-label">Nama Laptop</label>
+        <div class="input-wrapper">
+          <i class="ti ti-device-laptop"></i>
+          <input type="text" class="input-control" value="{{ $laptop->brand }} {{ $laptop->model }} ({{ $laptop->code }})" readonly>
         </div>
+      </div>
 
-        {{-- Big Image --}}
-        <div class="big-img-box">
-          @if($laptop->image)
-            <img src="{{ asset('storage/' . $laptop->image) }}" alt="Laptop model photo">
-          @else
-            <i class="ti ti-device-laptop"></i>
-          @endif
+      {{-- Nama Peminjam --}}
+      <div class="form-group">
+        <label class="form-label">Nama Peminjam <span>*</span></label>
+        <div class="input-wrapper">
+          <i class="ti ti-user"></i>
+          <input type="text" name="borrower_name" class="input-control" value="{{ old('borrower_name', auth()->user()->name) }}" required placeholder="Masukkan nama peminjam...">
         </div>
+      </div>
 
-        {{-- Brand & Model Info --}}
-        <div class="detail-identity">
-          <div class="identity-brand">{{ $laptop->brand }}</div>
-          <h1 class="identity-name">{{ $laptop->model }}</h1>
-          
-          @if($laptop->category)
-            <div class="identity-cat">
-              <i class="ti ti-tag"></i> {{ $laptop->category->name }}
-            </div>
-          @endif
+      {{-- Keperluan --}}
+      <div class="form-group">
+        <label class="form-label">Keperluan <span>*</span></label>
+        <div class="input-wrapper">
+          <i class="ti ti-file-text"></i>
+          <input type="text" name="purpose" class="input-control" value="{{ old('purpose') }}" required placeholder="cth: Tugas Akhir, Ujian Praktikum">
         </div>
+      </div>
 
-      </article>
-
-    </div>
-
-    {{-- ═══════════════════════════════════════════════════════════ --}}
-    {{--  KOLOM KANAN (2/5)                                         --}}
-    {{-- ═══════════════════════════════════════════════════════════ --}}
-    <div class="right-col">
-      
-      {{-- Card Spesifikasi Lengkap --}}
-      <section class="spec-card">
-        <h3 class="card-title"><i class="ti ti-cpu" style="color:var(--teal)"></i> Spesifikasi Unit</h3>
-        
-        <div class="spec-grid">
-          
-          {{-- Kode Laptop --}}
-          <div class="spec-item">
-            <div class="spec-icon"><i class="ti ti-barcode"></i></div>
-            <div>
-              <div class="spec-lbl">Kode Unit</div>
-              <div class="spec-val" style="font-family: monospace;">{{ $laptop->code }}</div>
-            </div>
-          </div>
-
-          {{-- Serial Number --}}
-          <div class="spec-item">
-            <div class="spec-icon"><i class="ti ti-hash"></i></div>
-            <div>
-              <div class="spec-lbl">Serial Number</div>
-              <div class="spec-val">{{ $laptop->serial_number ?? '-' }}</div>
-            </div>
-          </div>
-
-          {{-- Prosesor --}}
-          <div class="spec-item">
-            <div class="spec-icon"><i class="ti ti-cpu"></i></div>
-            <div>
-              <div class="spec-lbl">Prosesor</div>
-              <div class="spec-val">{{ $laptop->processor ?? '-' }}</div>
-            </div>
-          </div>
-
-          {{-- RAM --}}
-          <div class="spec-item">
-            <div class="spec-icon"><i class="ti ti-database"></i></div>
-            <div>
-              <div class="spec-lbl">Memori RAM</div>
-              <div class="spec-val">{{ $laptop->ram ?? '8' }} GB</div>
-            </div>
-          </div>
-
-          {{-- Storage --}}
-          <div class="spec-item">
-            <div class="spec-icon"><i class="ti ti-server"></i></div>
-            <div>
-              <div class="spec-lbl">Penyimpanan</div>
-              <div class="spec-val">{{ $laptop->storage ?? '-' }} SSD</div>
-            </div>
-          </div>
-
-          {{-- VGA --}}
-          <div class="spec-item">
-            <div class="spec-icon"><i class="ti ti-device-gamepad-2"></i></div>
-            <div>
-              <div class="spec-lbl">Kartu Grafis (VGA)</div>
-              <div class="spec-val">{{ $laptop->vga ?? 'Integrated Intel Graphics' }}</div>
-            </div>
-          </div>
-
-          {{-- Kondisi Fisik --}}
-          <div class="spec-item">
-            <div class="spec-icon"><i class="ti ti-shield-check"></i></div>
-            <div>
-              <div class="spec-lbl">Kondisi Fisik</div>
-              <div class="spec-val" style="text-transform: uppercase;">{{ str_replace('_', ' ', $laptop->condition) }}</div>
-            </div>
-          </div>
-
-          {{-- Kategori --}}
-          <div class="spec-item">
-            <div class="spec-icon"><i class="ti ti-tag"></i></div>
-            <div>
-              <div class="spec-lbl">Kelompok Rumpun</div>
-              <div class="spec-val">{{ $laptop->category->name ?? 'N/A' }}</div>
-            </div>
-          </div>
-
+      {{-- Tanggal Pinjam --}}
+      <div class="form-group">
+        <label class="form-label">Tanggal Pinjam <span>*</span></label>
+        <div class="input-wrapper">
+          <i class="ti ti-calendar"></i>
+          <input type="date" name="borrow_date" id="borrow_date" class="input-control" value="{{ old('borrow_date', now()->format('Y-m-d')) }}" min="{{ now()->format('Y-m-d') }}" required>
         </div>
-      </section>
+      </div>
 
-      {{-- ═══════════════════════════════════════════════════════════ --}}
-      {{--  Card Aksi Pinjam (Tersedia) / Info Pinjam (Dipinjam)     --}}
-      {{-- ═══════════════════════════════════════════════════════════ --}}
-      <section class="action-card" id="borrow-section">
-        
-        @if($laptop->status === 'tersedia')
-          <h3 class="card-title"><i class="ti ti-clipboard-list" style="color:var(--teal)"></i> Formulir Peminjaman</h3>
-          
-          <form method="POST" action="{{ route('user.borrowings.store') }}">
-            @csrf
-            <input type="hidden" name="laptop_id" value="{{ $laptop->id }}">
+      {{-- Tanggal Kembali --}}
+      <div class="form-group">
+        <label class="form-label">Tanggal Kembali <span>*</span></label>
+        <div class="input-wrapper">
+          <i class="ti ti-calendar"></i>
+          <input type="date" name="return_date" id="return_date" class="input-control" value="{{ old('return_date', now()->addDay()->format('Y-m-d')) }}" required>
+        </div>
+      </div>
 
-            {{-- Tgl Mulai Pinjam --}}
-            <div class="field" style="margin-bottom: 16px;">
-              <label class="f-label">Tanggal Mulai Pinjam <span>*</span></label>
-              <div class="f-input-wrapper">
-                <i class="ti ti-calendar-event"></i>
-                <input type="date" name="borrow_date" class="f-input" value="{{ now()->format('Y-m-d') }}" min="{{ now()->format('Y-m-d') }}" required>
-              </div>
-            </div>
+      {{-- Buttons --}}
+      <div class="btn-row">
+        <a href="{{ route('user.laptops.index') }}" class="btn-back">Kembali</a>
+        <button type="submit" class="btn-submit">Ajukan Peminjaman</button>
+      </div>
 
-            {{-- Tgl Rencana Kembali --}}
-            <div class="field" style="margin-bottom: 16px;">
-              <label class="f-label">Tanggal Rencana Pengembalian <span>*</span></label>
-              <div class="f-input-wrapper">
-                <i class="ti ti-calendar-time"></i>
-                <input type="date" name="return_date" class="f-input" value="{{ now()->addDays(3)->format('Y-m-d') }}" min="{{ now()->format('Y-m-d') }}" required>
-              </div>
-            </div>
+    </form>
 
-            {{-- Keperluan --}}
-            <div class="field" style="margin-bottom: 18px;">
-              <label class="f-label">Keperluan Peminjaman <span>*</span></label>
-              <textarea name="purpose" class="f-input" style="height: 90px; padding: 10px; resize: none;" placeholder="Tuliskan alasan / keperluan meminjam unit laptop ini secara detail..." required></textarea>
-            </div>
-
-            {{-- Submit --}}
-            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">
-              Ajukan Peminjaman Unit
-            </button>
-
-            <p style="font-size: 0.72rem; color: var(--muted); text-align: center; margin-top: 10px; font-weight: 500;">
-              * Peminjaman memerlukan persetujuan dari Admin sebelum unit diserahkan.
-            </p>
-          </form>
-
-        @elseif($laptop->status === 'dipinjam')
-          @php
-            $activeBorrowing = $laptop->borrowings()->whereIn('status', ['approved', 'borrowed'])->latest()->first();
-            $estReturnDate = $activeBorrowing ? $activeBorrowing->return_date->format('d M Y') : 'segera';
-          @endphp
-          <h3 class="card-title"><i class="ti ti-info-circle" style="color:#3b82f6"></i> Informasi Ketersediaan</h3>
-          <div class="warning-card">
-            <i class="ti ti-alert-circle"></i>
-            <div>
-              <span style="font-weight: 700; color: #1e3a8a;">Laptop Sedang Dipinjam</span>
-              <p style="margin-top: 4px; color: #1e40af;">
-                Unit ini saat ini sedang dipinjam oleh mahasiswa lain. Estimasi pengembalian unit adalah pada tanggal <strong>{{ $estReturnDate }}</strong>.
-              </p>
-            </div>
-          </div>
-
-        @elseif($laptop->status === 'maintenance')
-          <h3 class="card-title"><i class="ti ti-info-circle" style="color:#f59e0b"></i> Informasi Ketersediaan</h3>
-          <div class="warning-card" style="background: rgba(245, 158, 11, 0.04); border-color: rgba(245, 158, 11, 0.15); color: #78350f;">
-            <i class="ti ti-tool" style="color: #f59e0b;"></i>
-            <div>
-              <span style="font-weight: 700; color: #78350f;">Sedang Dalam Perbaikan</span>
-              <p style="margin-top: 4px; color: #92400e;">
-                Unit laptop ini sedang berada dalam masa pemeliharaan rutin atau perbaikan teknis agar dapat digunakan kembali secara maksimal.
-              </p>
-            </div>
-          </div>
-
-        @else
-          <h3 class="card-title"><i class="ti ti-info-circle" style="color:#ef4444"></i> Informasi Ketersediaan</h3>
-          <div class="warning-card" style="background: rgba(239, 68, 68, 0.04); border-color: rgba(239, 68, 68, 0.15); color: #7f1d1d;">
-            <i class="ti ti-ban" style="color: #ef4444;"></i>
-            <div>
-              <span style="font-weight: 700; color: #7f1d1d;">Unit Rusak</span>
-              <p style="margin-top: 4px; color: #991b1b;">
-                Mohon maaf, unit laptop ini mengalami kerusakan berat fisik/sistem dan sedang tidak diizinkan untuk dipinjam oleh mahasiswa.
-              </p>
-            </div>
-          </div>
-        @endif
-
-      </section>
-
+    {{-- Info Box Abu --}}
+    <div class="info-box-gray">
+      <i class="ti ti-info-circle"></i>
+      <div>Peminjaman Anda akan dikonfirmasi oleh admin terlebih dahulu. Mohon tunggu status persetujuan di riwayat peminjaman Anda.</div>
     </div>
 
   </div>
@@ -494,14 +265,45 @@
 
 @push('scripts')
 <script>
-// Form loader spinner
-document.querySelectorAll('form').forEach(function(f){
-  f.addEventListener('submit', function(){
-    var btn = f.querySelector('.btn-primary');
-    if(btn){
+document.addEventListener('DOMContentLoaded', function() {
+  const borrowInput = document.getElementById('borrow_date');
+  const returnInput = document.getElementById('return_date');
+
+  function updateReturnMin() {
+    const borrowVal = borrowInput.value;
+    if (borrowVal) {
+      // Hitung borrow_date + 1 hari
+      const borrowDateObj = new Date(borrowVal);
+      borrowDateObj.setDate(borrowDateObj.getDate() + 1);
+      
+      const year = borrowDateObj.getFullYear();
+      const month = String(borrowDateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(borrowDateObj.getDate()).padStart(2, '0');
+      
+      const minReturnVal = `${year}-${month}-${day}`;
+      returnInput.min = minReturnVal;
+      
+      // Jika return_date saat ini kurang dari minReturnVal, sesuaikan
+      if (returnInput.value && returnInput.value < minReturnVal) {
+        returnInput.value = minReturnVal;
+      }
+    }
+  }
+
+  // Set min on load
+  updateReturnMin();
+
+  // Update min on change
+  borrowInput.addEventListener('change', updateReturnMin);
+
+  // Form submit loading
+  const form = document.getElementById('borrow-form');
+  form.addEventListener('submit', function() {
+    const btn = form.querySelector('.btn-submit');
+    if (btn) {
       btn.innerHTML = '<i class="ti ti-loader animate-spin"></i> Memproses...';
       btn.disabled = true;
-      btn.style.opacity = '.75';
+      btn.style.opacity = '0.8';
     }
   });
 });

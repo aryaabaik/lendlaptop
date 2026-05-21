@@ -389,11 +389,10 @@ body::after{
       </div>
     </div>
     
-    <!-- Tab Navigasi: Masuk | Daftar | Reset -->
+    <!-- Tab Navigasi: Masuk | Daftar -->
     <div class="tabs" role="tablist">
       <a href="{{ route('login') }}" class="tab-btn {{ request()->routeIs('login') ? 'active' : '' }}" id="tab-login" role="tab">Masuk</a>
       <a href="{{ route('register') }}" class="tab-btn {{ request()->routeIs('register') ? 'active' : '' }}" id="tab-register" role="tab">Daftar</a>
-      <a href="{{ route('password.request') }}" class="tab-btn {{ request()->routeIs('password.*') ? 'active' : '' }}" id="tab-reset" role="tab">Reset</a>
     </div>
   </div>
 
@@ -422,16 +421,6 @@ body::after{
       @endif
     </div>
 
-    <!-- RESET PANEL -->
-    <div class="panel {{ request()->routeIs('password.*') ? 'active' : '' }}" id="panel-reset" role="tabpanel">
-      <div class="panel-title">Reset Password</div>
-      <div class="panel-sub">Masukkan email Anda untuk menerima link reset</div>
-      @if(request()->routeIs('password.*'))
-        {{ $slot }}
-      @else
-        @include('auth._reset_form')
-      @endif
-    </div>
 
   </div>
 </div>

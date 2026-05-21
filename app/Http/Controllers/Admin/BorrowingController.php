@@ -197,6 +197,16 @@ class BorrowingController extends Controller
             'user_id'      => Auth::id(),
         ]);
 
+        if ($borrowing->user_id) {
+            \App\Helpers\NotificationHelper::send(
+                $borrowing->user_id,
+                'Peminjaman Disetujui ✓',
+                'Laptop ' . $borrowing->laptop->brand . ' ' . $borrowing->laptop->model . ' siap diambil.',
+                'success',
+                route('user.borrowings.index')
+            );
+        }
+
         return back()->with('success', 'Peminjaman berhasil disetujui!');
     }
 
@@ -225,6 +235,16 @@ class BorrowingController extends Controller
             'description'  => 'Peminjaman ditolak: ' . $request->admin_note,
             'user_id'      => Auth::id(),
         ]);
+
+        if ($borrowing->user_id) {
+            \App\Helpers\NotificationHelper::send(
+                $borrowing->user_id,
+                'Peminjaman Ditolak',
+                'Pengajuan Anda ditolak. Alasan: ' . $borrowing->admin_note,
+                'warning',
+                route('user.borrowings.index')
+            );
+        }
 
         return back()->with('success', 'Peminjaman berhasil ditolak.');
     }

@@ -2,6 +2,10 @@
 <div class="alert-ok">{{ session('status') }}</div>
 @endif
 
+@if (session('success'))
+<div class="alert-ok">{{ session('success') }}</div>
+@endif
+
 <form method="POST" action="{{ route('login') }}">
   @csrf
   
@@ -32,15 +36,12 @@
     @enderror
   </div>
 
-  {{-- Checkbox "Ingat saya" kiri + link "Lupa password?" kanan (text teal) --}}
+  {{-- Checkbox "Ingat saya" --}}
   <div class="row-opt">
     <label class="rem" for="remember_me">
       <input type="checkbox" id="remember_me" name="remember">
       Ingat saya
     </label>
-    @if (Route::has('password.request'))
-      <a class="fgt" href="{{ route('password.request') }}">Lupa password?</a>
-    @endif
   </div>
 
   {{-- Tombol submit: "Masuk ke Sistem" full-width bg-teal --}}

@@ -34,23 +34,18 @@ class RegisteredUserController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role'     => ['nullable', 'string', 'in:user,admin'],
         ]);
 
         $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'role'     => $request->input('role', 'user'),
+            'role'     => 'user',
             'kelas'    => $request->input('kelas'),
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return $user->role === 'admin'
-            ? redirect()->route('admin.dashboard')
-            : redirect()->route('user.dashboard');
+        return redirect()->route('login')->with('success', 'Akun berhasil dibuat! Silakan masuk.');
     }
 }

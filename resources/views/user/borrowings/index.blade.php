@@ -4,163 +4,167 @@
 
 @section('content')
 <style>
-/* ─── PREMIUM USER BORROWINGS STYLES ──────────────────────── */
-.borrowings-container {
-  max-width: 800px;
-  margin: 104px auto 40px;
-  padding: 0 24px;
+/* ─── THEMING & BORROWINGS LIST STYLES ─────────────────────── */
+:root {
+  --teal:      #0D9F7A;
+  --teal-dark: #0b8a6a;
+  --teal-dim:  rgba(13,159,122,.10);
+  --navy:      #0A1628;
+  --red:       #EF4444;
+  --red-dim:   rgba(239,68,68,.10);
+  --amber:     #F59E0B;
+  --blue:      #3B82F6;
+  --text:      #1e293b;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --bg:        #f8fafc;
 }
 
-/* Header */
-.b-header {
-  margin-bottom: 24px;
+.borrowings-container {
+  max-width: 800px;
+  margin: 0 auto;
 }
+
+/* 1. Header */
 .b-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text);
-  letter-spacing: -0.02em;
-}
-
-/* Tab controls */
-.tab-container {
-  display: flex;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 4px;
+  color: var(--navy);
   margin-bottom: 24px;
 }
-.tab-btn {
-  flex: 1;
-  text-align: center;
-  padding: 10px;
-  font-size: .82rem;
+
+/* 2. Tabs (Pill Tabs, aktif bg-teal text-white) */
+.tab-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 12px;
+}
+.tab-pill {
+  padding: 8px 18px;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--muted);
   text-decoration: none;
-  border-radius: 8px;
-  transition: all .2s;
+  border-radius: 9999px; /* pill tabs */
+  transition: all 0.2s ease;
 }
-.tab-btn:hover {
+.tab-pill:hover {
   color: var(--text);
+  background-color: #f1f5f9;
 }
-.tab-btn.active {
-  background: var(--teal);
-  color: #fff;
-  box-shadow: 0 4px 10px rgba(13,159,122,.2);
+.tab-pill.active {
+  background-color: var(--teal);
+  color: #fff !important;
 }
 
-/* Card List */
+/* 3. Card List */
 .cards-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
+
+/* Card: bg-white, rounded-xl, border border-gray-100 */
 .b-card {
-  background: #fff;
-  border-radius: 1rem;
-  border: 1px solid #f1f5f9;
-  box-shadow: 0 1px 3px rgba(0,0,0,.02);
+  background-color: #fff;
+  border-radius: 0.75rem; /* rounded-xl */
+  border: 1px solid #f3f4f6; /* border border-gray-100 */
+  box-shadow: 0 1px 3px rgba(0,0,0,.01);
   padding: 20px;
-  display: flex;
-  flex-direction: column;
-  transition: all .2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .b-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 16px rgba(10,22,40,.04);
 }
 
-.b-card-top {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+.b-card-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: 16px;
-  align-items: center;
-}
-@media(max-width: 575px) {
-  .b-card-top {
-    grid-template-columns: 1fr;
-    text-align: center;
-    justify-items: center;
-    gap: 12px;
-  }
 }
 
-.b-thumb {
-  width: 64px;
-  height: 64px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: #f8fafc;
+/* Kiri: ikon laptop teal (48x48 bg-teal-50 rounded-lg) */
+.b-icon-box {
+  width: 48px;
+  height: 48px;
+  background-color: var(--teal-dim); /* bg-teal-50 equivalent */
+  color: var(--teal);
+  border-radius: 0.5rem; /* rounded-lg */
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--teal);
   font-size: 1.5rem;
   flex-shrink: 0;
 }
-.b-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 9px;
-}
 
-.b-mid {
-  display: flex;
-  flex-direction: column;
+/* Tengah: brand+model (bold) + keperluan (truncate) */
+.b-info-box {
+  flex: 1;
+  min-width: 0; /* allows text truncation */
 }
-.b-lap-name {
-  font-weight: 700;
-  font-size: .95rem;
+.b-laptop-name {
+  font-weight: 700; /* bold */
+  font-size: 0.95rem;
   color: var(--text);
+  display: block;
 }
-.b-lap-code {
-  font-family: monospace;
-  font-size: .75rem;
+.b-purpose-text {
+  font-size: 0.8rem;
   color: var(--muted);
-  margin-top: 2px;
-}
-.b-purpose {
-  font-size: .78rem;
-  color: var(--muted);
-  margin-top: 6px;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
+  margin-top: 4px;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis; /* truncate */
 }
 
-.b-right {
+/* Kanan */
+.b-side-box {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
-}
-@media(max-width: 575px) {
-  .b-right {
-    align-items: center;
-  }
-}
-.b-date-lbl {
-  font-size: .7rem;
-  font-weight: 600;
-  color: var(--muted);
-  text-transform: uppercase;
+  justify-content: space-between;
+  height: 48px;
+  flex-shrink: 0;
 }
 
-/* Progress bar block */
+/* Badge status */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+.badge-teal   { background-color: var(--teal-dim); color: var(--teal); }
+.badge-blue   { background-color: rgba(59,130,246,.12); color: var(--blue); }
+.badge-amber  { background-color: rgba(245,158,11,.12); color: var(--amber); }
+.badge-red    { background-color: rgba(239,68,68,.12); color: var(--red); }
+
+/* Kanan bawah: "Kembali: [tgl]" teks abu */
+.b-return-date {
+  font-size: 0.75rem;
+  color: var(--muted); /* teks abu */
+  font-weight: 500;
+}
+
+/* Bawah: progress bar sisa hari (jika status borrowed) */
 .b-progress-block {
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid #f9fafb;
 }
 .progress-meta {
   display: flex;
   justify-content: space-between;
-  font-size: .7rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--muted);
   margin-bottom: 6px;
@@ -168,215 +172,293 @@
 .progress-bar-bg {
   width: 100%;
   height: 5px;
-  background: #e2e8f0;
+  background-color: #f1f5f9;
   border-radius: 3px;
   overflow: hidden;
 }
 .progress-bar-fill {
   height: 100%;
   border-radius: 3px;
+  transition: width .5s ease;
 }
 
 /* Card Actions */
 .b-actions {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid #f1f5f9;
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  margin-top: 14px;
+  gap: 10px;
 }
 
-/* Pagination Override */
-.pagination-wrap {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-radius: 1rem;
-  background: #fff;
-  border: 1px solid #f1f5f9;
-  box-shadow: 0 1px 3px rgba(0,0,0,.02);
-  font-size: .8rem;
-}
-.pagination-wrap nav {
-  display: inline-flex;
-  border-radius: 8px;
-  overflow: hidden;
-}
-.pagination-wrap span, .pagination-wrap a {
-  padding: 8px 14px;
-  border: 1px solid #cbd5e1;
-  background: #fff;
-  color: var(--muted);
+/* Tombol "Batalkan" outline red kecil jika masih pending */
+.btn-cancel-outline {
+  background-color: #fff;
+  border: 1px solid var(--red);
+  color: var(--red);
+  font-weight: 600;
+  font-size: 0.75rem; /* kecil */
+  padding: 6px 14px;
+  border-radius: 0.375rem; /* rounded-md */
+  cursor: pointer;
   text-decoration: none;
-  font-weight: 500;
-  transition: all .2s;
-  margin-left: -1px;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
-.pagination-wrap a:hover {
-  background: #f8fafc;
+.btn-cancel-outline:hover {
+  background-color: var(--red-dim);
+}
+
+.btn-detail {
+  background-color: #fff;
+  border: 1px solid var(--border);
   color: var(--text);
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 6px 14px;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.2s;
 }
-.pagination-wrap .active-page {
-  background: var(--teal) !important;
-  color: #fff !important;
-  border-color: var(--teal) !important;
+.btn-detail:hover {
+  background-color: #f9fafb;
+}
+
+/* 4. Empty State */
+.empty-state {
+  background-color: #fff;
+  border-radius: 0.75rem;
+  border: 1px solid #f3f4f6;
+  padding: 56px 24px;
+  text-align: center;
+  color: var(--muted);
+  box-shadow: 0 1px 3px rgba(0,0,0,.01);
+}
+.empty-state i {
+  font-size: 3.5rem;
+  color: var(--muted);
+  opacity: 0.35;
+  display: block;
+  margin-bottom: 16px;
+}
+.empty-state h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.empty-state p {
+  font-size: 0.82rem;
+  margin-bottom: 20px;
+}
+
+/* Pagination bar wrapper */
+.pagi-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  margin-top: 24px;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+.pagi-links {
+  display: flex;
+  gap: 6px;
+}
+.pagi-links a, .pagi-links span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background-color: #fff;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.pagi-links a:hover {
+  background-color: var(--teal-dim);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.pagi-links .active-pg {
+  background-color: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.pagi-links .disabled-pg {
+  opacity: 0.4;
+  pointer-events: none;
 }
 </style>
 
 <div class="borrowings-container">
   
-  {{-- Header --}}
-  <div class="b-header">
-    <h1 class="b-title">Peminjaman Saya</h1>
-  </div>
+  {{-- 1. HEADER --}}
+  <h1 class="b-title">Peminjaman Saya</h1>
 
-  {{-- Tab Navigation --}}
-  <nav class="tab-container">
+  @if(session('success'))
+    <div style="background-color:rgba(13,159,122,0.06); border:1px solid rgba(13,159,122,0.15); border-radius:0.5rem; padding:12px 16px; color:var(--teal); font-size:0.84rem; margin-bottom:20px;">
+      {{ session('success') }}
+    </div>
+  @endif
+
+  @if(session('error'))
+    <div style="background-color:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.15); border-radius:0.5rem; padding:12px 16px; color:var(--red); font-size:0.84rem; margin-bottom:20px;">
+      {{ session('error') }}
+    </div>
+  @endif
+
+  {{-- 2. TABS (Pill Tabs, aktif bg-teal text-white) --}}
+  <nav class="tab-row">
     <a href="{{ route('user.borrowings.index', ['tab' => 'active']) }}" 
-       class="tab-btn {{ $tab === 'active' ? 'active' : '' }}">
+       class="tab-pill {{ $tab === 'active' ? 'active' : '' }}">
       Aktif
     </a>
     <a href="{{ route('user.borrowings.index', ['tab' => 'pending']) }}" 
-       class="tab-btn {{ $tab === 'pending' ? 'active' : '' }}">
+       class="tab-pill {{ $tab === 'pending' ? 'active' : '' }}">
       Menunggu
     </a>
     <a href="{{ route('user.borrowings.index', ['tab' => 'all']) }}" 
-       class="tab-btn {{ $tab === 'all' ? 'active' : '' }}">
+       class="tab-pill {{ $tab === 'all' ? 'active' : '' }}">
       Semua
     </a>
   </nav>
 
-  {{-- Card List --}}
+  {{-- 3. CARD LIST / 4. EMPTY STATE --}}
   <section class="cards-list">
     @if($borrowings->isEmpty())
       
-      {{-- Empty State Card --}}
-      <div style="background: #fff; border-radius: 1rem; border: 1px solid #f1f5f9; padding: 60px 20px; text-align: center; color: var(--muted);">
-        <i class="ti ti-folders" style="font-size: 3.5rem; color: var(--muted); margin-bottom: 16px; display: block; opacity: 0.4;"></i>
-        <h3 style="font-weight: 700; color: var(--text); font-size: 1.05rem; margin-bottom: 6px;">
-          @if($tab === 'active')
-            Tidak ada peminjaman aktif saat ini
-          @elseif($tab === 'pending')
-            Tidak ada pengajuan menunggu persetujuan
-          @else
-            Anda belum pernah mengajukan peminjaman
-          @endif
-        </h3>
-        <p style="font-size: .8rem; margin-bottom: 16px;">
-          Silakan ajukan peminjaman unit laptop baru pada katalog unit kami yang tersedia.
-        </p>
-        <a href="{{ route('user.laptops.index') }}" class="btn btn-primary" style="display: inline-flex; align-items:center; gap:6px; padding: 8px 18px; font-size: 0.8rem;">
-          <i class="ti ti-device-laptop"></i> Jelajahi Katalog Laptop
-        </a>
+      {{-- Empty state per tab --}}
+      <div class="empty-state">
+        <i class="ti ti-folder-off"></i>
+        @if($tab === 'active')
+          <h3>Tidak ada peminjaman aktif</h3>
+          <p>Anda sedang tidak memegang atau meminjam unit laptop apa pun.</p>
+        @elseif($tab === 'pending')
+          <h3>Tidak ada pengajuan menunggu</h3>
+          <p>Seluruh pengajuan peminjaman Anda sudah dikonfirmasi atau dibatalkan.</p>
+        @else
+          <h3>Belum ada riwayat peminjaman</h3>
+          <p>Anda belum pernah melakukan pengajuan peminjaman laptop.</p>
+        @endif
+        <a href="{{ route('user.laptops.index') }}" class="tab-pill active">Jelajahi Katalog</a>
       </div>
 
     @else
       @foreach($borrowings as $b)
         @php
-          // Hitung progress bar jika berstatus approved atau borrowed
-          $showProgress = in_array($b->status, ['approved', 'borrowed', 'late']);
+          $isBorrowed = ($b->status === 'borrowed' || $b->status === 'late');
+          
+          // Progress bar variables
           $totalDays = 1;
           $elapsedDays = 0;
           $pct = 0;
           $barColor = 'var(--teal)';
           $remainingText = '';
 
-          if ($showProgress) {
+          if ($isBorrowed) {
               $totalDays = $b->borrow_date->diffInDays($b->return_date) ?: 1;
               $elapsedDays = $b->borrow_date->diffInDays(now()) ?: 0;
               $pct = min(100, max(0, round(($elapsedDays / $totalDays) * 100)));
-              $barColor = $pct > 80 ? 'var(--red)' : ($pct > 50 ? 'var(--amber)' : 'var(--teal)');
               
-              $remainingDays = now()->diffInDays($b->return_date, false);
-              if ($remainingDays < 0) {
-                  $remainingText = 'Terlambat ' . abs($remainingDays) . ' hari';
+              $daysLeft = now()->diffInDays($b->return_date, false);
+              if ($daysLeft < 0) {
+                  $barColor = 'var(--red)';
+                  $remainingText = 'Terlambat ' . abs($daysLeft) . ' hari!';
+              } elseif ($daysLeft < 2) {
+                  $barColor = 'var(--amber)';
+                  $remainingText = 'Sisa ' . $daysLeft . ' hari lagi';
               } else {
-                  $remainingText = $remainingDays . ' hari tersisa';
+                  $barColor = 'var(--teal)';
+                  $remainingText = 'Sisa ' . $daysLeft . ' hari';
               }
           }
         @endphp
-
         <div class="b-card">
           
-          {{-- Card Top Row --}}
-          <div class="b-card-top">
+          <div class="b-card-main">
             
-            {{-- Thumb photo --}}
-            <div class="b-thumb">
-              @if($b->laptop && $b->laptop->image)
-                <img src="{{ asset('storage/' . $b->laptop->image) }}" alt="Laptop image">
-              @else
-                <i class="ti ti-device-laptop"></i>
-              @endif
+            {{-- Kiri: ikon laptop teal (48x48 bg-teal-50 rounded-lg) --}}
+            <div class="b-icon-box">
+              <i class="ti ti-device-laptop"></i>
             </div>
 
-            {{-- Middle Column --}}
-            <div class="b-mid">
-              <span class="b-lap-name">{{ $b->laptop->brand ?? 'N/A' }} {{ $b->laptop->model ?? '' }}</span>
-              <span class="b-lap-code">Kode Unit: {{ $b->laptop->code ?? 'N/A' }}</span>
-              <p class="b-purpose" title="{{ $b->purpose }}">Keperluan: {{ $b->purpose }}</p>
+            {{-- Tengah: brand+model (bold) + keperluan (truncate) --}}
+            <div class="b-info-box">
+              <span class="b-laptop-name">{{ $b->laptop->brand ?? 'N/A' }} {{ $b->laptop->model ?? '' }}</span>
+              <div class="b-purpose-text" title="{{ $b->purpose }}">
+                Keperluan: {{ $b->purpose }}
+              </div>
             </div>
 
-            {{-- Right Column --}}
-            <div class="b-right">
-              @if($b->status === 'pending')
-                <span class="badge badge-amber">Pending</span>
-              @elseif($b->status === 'approved')
-                <span class="badge badge-teal">Disetujui</span>
-              @elseif($b->status === 'borrowed')
-                <span class="badge badge-blue">Sedang Dipinjam</span>
-              @elseif($b->status === 'returned')
-                <span class="badge badge-teal">Dikembalikan</span>
-              @elseif($b->status === 'rejected')
-                <span class="badge badge-red">Ditolak</span>
-              @elseif($b->status === 'cancelled')
-                <span class="badge badge-red">Dibatalkan</span>
-              @else
-                <span class="badge badge-red">{{ ucfirst($b->status) }}</span>
-              @endif
-              
-              <div style="text-align: right; margin-top:4px;">
-                <div class="b-date-lbl">Batas Pengembalian</div>
-                <div style="font-size: 0.78rem; font-weight: 700; color: var(--text);">
-                  {{ $b->return_date->format('d M Y') }}
-                </div>
+            {{-- Kanan --}}
+            <div class="b-side-box">
+              {{-- Kanan atas: badge status --}}
+              <div>
+                @if($b->status === 'pending')
+                  <span class="badge badge-amber">Menunggu</span>
+                @elseif($b->status === 'approved')
+                  <span class="badge badge-teal">Disetujui</span>
+                @elseif($b->status === 'borrowed')
+                  <span class="badge badge-blue">Dipinjam</span>
+                @elseif($b->status === 'returned')
+                  <span class="badge badge-teal">Kembali</span>
+                @elseif($b->status === 'rejected')
+                  <span class="badge badge-red">Ditolak</span>
+                @elseif($b->status === 'cancelled')
+                  <span class="badge badge-red">Batal</span>
+                @else
+                  <span class="badge badge-teal">{{ ucfirst($b->status) }}</span>
+                @endif
+              </div>
+
+              {{-- Kanan bawah: "Kembali: [tgl]" teks abu --}}
+              <div class="b-return-date">
+                Kembali: {{ $b->return_date->format('d M Y') }}
               </div>
             </div>
 
           </div>
 
-          {{-- Progress Bar (Only for approved/borrowed) --}}
-          @if($showProgress)
+          {{-- Bawah: progress bar sisa hari (jika status borrowed) --}}
+          @if($isBorrowed)
             <div class="b-progress-block">
               <div class="progress-meta">
-                <span>{{ $remainingText }}</span>
-                <span>{{ $pct }}% Masa Pinjam</span>
+                <span style="font-weight: 700; color: {{ $barColor }};">{{ $remainingText }}</span>
+                <span>{{ $pct }}% Durasi</span>
               </div>
               <div class="progress-bar-bg">
-                <div class="progress-bar-fill" style="width: {{ $pct }}%; background: {{ $barColor }};"></div>
+                <div class="progress-bar-fill" style="width: {{ $pct }}%; background-color: {{ $barColor }};"></div>
               </div>
             </div>
           @endif
 
-          {{-- Card Bottom Actions --}}
+          {{-- Actions --}}
           <div class="b-actions">
-            
-            <a href="{{ route('user.borrowings.show', $b->id) }}" class="btn btn-secondary" style="padding: 7px 14px; font-size: 0.75rem; display: inline-flex; align-items:center; gap:4px;">
-              <i class="ti ti-eye"></i> Detail
+            <a href="{{ route('user.borrowings.show', $b->id) }}" class="btn-detail">
+              <i class="ti ti-info-circle"></i> Detail
             </a>
 
+            {{-- Tombol "Batalkan" outline red kecil jika masih pending --}}
             @if($b->status === 'pending')
-              <form method="POST" action="{{ route('user.borrowings.destroy', $b->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pengajuan peminjaman ini?')">
+              <form method="POST" action="{{ route('user.borrowings.destroy', $b->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pengajuan ini?')">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn btn-primary" style="background:#ef4444; border-color:#ef4444; padding: 7px 14px; font-size: 0.75rem; display: inline-flex; align-items:center; gap:4px;">
-                  <i class="ti ti-ban"></i> Batalkan
+                <button type="submit" class="btn-cancel-outline">
+                  <i class="ti ti-circle-x"></i> Batalkan
                 </button>
               </form>
             @endif
-
           </div>
 
         </div>
@@ -384,34 +466,34 @@
     @endif
   </section>
 
-  {{-- PAGINATION --}}
+  {{-- Pagination --}}
   @if($borrowings->hasPages())
-    <div class="pagination-wrap">
-      <div>
-        Menampilkan {{ $borrowings->firstItem() }} - {{ $borrowings->lastItem() }} dari {{ $borrowings->total() }} riwayat
-      </div>
-      <nav>
-        {{-- Previous Page Link --}}
-        @if ($borrowings->onFirstPage())
-          <span style="opacity: 0.5; pointer-events: none;"><i class="ti ti-chevron-left"></i></span>
+    <div class="pagi-wrap">
+      <span>
+        Menampilkan {{ $borrowings->firstItem() }} – {{ $borrowings->lastItem() }} dari {{ $borrowings->total() }} riwayat
+      </span>
+      <nav class="pagi-links">
+        {{-- Prev --}}
+        @if($borrowings->onFirstPage())
+          <span class="disabled-pg"><i class="ti ti-chevron-left"></i></span>
         @else
           <a href="{{ $borrowings->previousPageUrl() }}"><i class="ti ti-chevron-left"></i></a>
         @endif
 
-        {{-- Pagination Elements --}}
-        @foreach ($borrowings->getUrlRange(1, $borrowings->lastPage()) as $page => $url)
-          @if ($page == $borrowings->currentPage())
-            <span class="active-page">{{ $page }}</span>
+        {{-- Numbers --}}
+        @foreach($borrowings->getUrlRange(1, $borrowings->lastPage()) as $page => $url)
+          @if($page == $borrowings->currentPage())
+            <span class="active-pg">{{ $page }}</span>
           @else
             <a href="{{ $url }}">{{ $page }}</a>
           @endif
         @endforeach
 
-        {{-- Next Page Link --}}
-        @if ($borrowings->hasMorePages())
+        {{-- Next --}}
+        @if($borrowings->hasMorePages())
           <a href="{{ $borrowings->nextPageUrl() }}"><i class="ti ti-chevron-right"></i></a>
         @else
-          <span style="opacity: 0.5; pointer-events: none;"><i class="ti ti-chevron-right"></i></span>
+          <span class="disabled-pg"><i class="ti ti-chevron-right"></i></span>
         @endif
       </nav>
     </div>

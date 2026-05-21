@@ -1,28 +1,5 @@
 <form method="POST" action="{{ route('register') }}">
   @csrf
-  
-  {{-- Daftar sebagai (Role Selector) --}}
-  <div class="field">
-    <label>Daftar Sebagai</label>
-    <div class="roles">
-      <label class="role-card selected" data-group="role" data-val="user">
-        <input type="radio" name="role" value="user" checked>
-        <div class="role-icon">
-          <i class="ti ti-user"></i>
-        </div>
-        <div class="role-name">Peminjam</div>
-        <div class="role-desc">Mahasiswa / Dosen</div>
-      </label>
-      <label class="role-card" data-group="role" data-val="admin">
-        <input type="radio" name="role" value="admin">
-        <div class="role-icon">
-          <i class="ti ti-shield"></i>
-        </div>
-        <div class="role-name">Admin</div>
-        <div class="role-desc">Pengelola sistem</div>
-      </label>
-    </div>
-  </div>
 
   {{-- Nama Lengkap & NIM / Kelas --}}
   <div class="field-row">

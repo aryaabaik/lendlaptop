@@ -35,10 +35,11 @@ class BorrowingController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'laptop_id'   => 'required|exists:laptops,id',
-            'borrow_date' => 'required|date|after_or_equal:today',
-            'return_date' => 'required|date|after_or_equal:borrow_date',
-            'purpose'     => 'required|string|max:500',
+            'laptop_id'     => 'required|exists:laptops,id',
+            'borrower_name' => 'required|string|max:255',
+            'borrow_date'   => 'required|date|after_or_equal:today',
+            'return_date'   => 'required|date|after:borrow_date',
+            'purpose'       => 'required|string|max:500',
         ]);
 
         $laptop = Laptop::findOrFail($validated['laptop_id']);
@@ -52,7 +53,7 @@ class BorrowingController extends Controller
         Borrowing::create([
             'user_id'       => Auth::id(),
             'laptop_id'     => $validated['laptop_id'],
-            'borrower_name' => Auth::user()->name,
+            'borrower_name' => $validated['borrower_name'],
             'borrow_date'   => $validated['borrow_date'],
             'return_date'   => $validated['return_date'],
             'purpose'       => $validated['purpose'],

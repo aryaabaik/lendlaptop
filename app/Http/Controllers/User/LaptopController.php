@@ -8,9 +8,6 @@ use Illuminate\Http\Request;
 
 class LaptopController extends Controller
 {
-    /**
-     * Display catalog of laptops with filters.
-     */
     public function index(Request $request)
     {
         $search = $request->input('search');
@@ -18,7 +15,7 @@ class LaptopController extends Controller
 
         $query = Laptop::query();
 
-        // Search filter
+        
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('brand', 'like', '%' . $search . '%')
@@ -26,7 +23,7 @@ class LaptopController extends Controller
             });
         }
 
-        // Status filter (Tersedia only toggle)
+        
         if ($availableOnly) {
             $query->where('status', 'tersedia');
         }
@@ -36,9 +33,7 @@ class LaptopController extends Controller
         return view('user.laptops.index', compact('laptops', 'search', 'availableOnly'));
     }
 
-    /**
-     * Display the specified laptop specifications.
-     */
+    
     public function show(Laptop $laptop)
     {
         return view('user.laptops.show', compact('laptop'));

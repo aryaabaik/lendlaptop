@@ -9,75 +9,79 @@ use App\Models\LaptopReturn;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class ReportController extends Controller
 {
     public function index(Request $request)
     {
-        $startDate = $request->input('start_date', now()->subMonths(6)->format('Y-m-d'));
-        $endDate = $request->input('end_date', now()->format('Y-m-d'));
+        $startDate = $request->input('start_date', now()->subDays(29)->format('Y-m-d'));
+        $endDate   = $request->input('end_date',   now()->format('Y-m-d'));
 
-        // 1. STAT SUMMARY GRID
+        // ── 1. STAT SUMMARY ──────────────────────────────────────────────
         $totalBorrowings = Borrowing::whereBetween('borrow_date', [$startDate, $endDate])->count();
-        $totalReturns = Borrowing::where('status', 'returned')
-            ->whereBetween('actual_return_date', [$startDate, $endDate])
-            ->count();
-        $totalFines = LaptopReturn::whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])->sum('fine');
-        $damagedLaptops = Laptop::whereIn('status', ['rusak', 'maintenance'])->count();
 
-        // 2. GRAFIK BATANG: Peminjaman per Bulan (Teal)
-        $monthlyData = Borrowing::select(
-                DB::raw("DATE_FORMAT(borrow_date, '%M %Y') as month"),
-                DB::raw("COUNT(id) as count")
+        $totalReturns = Borrowing::where('status', 'returned')
+            ->whereBetween('borrow_date', [$startDate, $endDate])
+            ->count();
+
+        $stillBorrowed = Borrowing::where('status', 'borrowed')
+            ->whereBetween('borrow_date', [$startDate, $endDate])
+            ->count();
+
+        $lateBorrowings = Borrowing::where('status', 'borrowed')
+            ->where('return_date', '<', now())
+            ->whereBetween('borrow_date', [$startDate, $endDate])
+            ->count();
+
+        // ── 2. CHART: Peminjaman per Hari ────────────────────────────────
+        $rawDaily = Borrowing::select(
+                DB::raw("DATE(borrow_date) as day"),
+                DB::raw("COUNT(id) as total")
             )
             ->whereBetween('borrow_date', [$startDate, $endDate])
-            ->groupBy(DB::raw("DATE_FORMAT(borrow_date, '%M %Y')"), DB::raw("MONTH(borrow_date)"))
-            ->orderBy(DB::raw("MONTH(borrow_date)"), 'asc')
-            ->get();
+            ->groupBy(DB::raw("DATE(borrow_date)"))
+            ->orderBy('day')
+            ->get()
+            ->keyBy('day');
 
-        $monthlyLabels = $monthlyData->pluck('month')->toArray();
-        $monthlyValues = $monthlyData->pluck('count')->toArray();
+        // Fill every date in range (so no gaps in chart)
+        $period     = CarbonPeriod::create($startDate, $endDate);
+        $dayLabels  = [];
+        $dayValues  = [];
+        $dayFull    = [];   // full date string for tooltip
+        $hariId     = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+        $bulanId    = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
 
-        // 3. GRAFIK PIE/DONUT: Distribusi Status Laptop
-        $laptopStats = Laptop::select('status', DB::raw('count(*) as count'))
-            ->groupBy('status')
-            ->get();
-        
-        $laptopStatuses = ['tersedia', 'dipinjam', 'maintenance', 'rusak'];
-        $laptopCounts = [0, 0, 0, 0];
-        foreach ($laptopStats as $stat) {
-            $idx = array_search($stat->status, $laptopStatuses);
-            if ($idx !== false) {
-                $laptopCounts[$idx] = $stat->count;
-            }
+        foreach ($period as $date) {
+            $key        = $date->format('Y-m-d');
+            $dayNum     = (int)$date->format('w');           // 0=Sun … 6=Sat
+            $bulanNum   = (int)$date->format('n') - 1;      // 0-based
+            $dayLabels[] = $hariId[$dayNum] . ', ' . $date->format('d') . ' ' . $bulanId[$bulanNum];
+            $dayValues[] = $rawDaily->has($key) ? (int)$rawDaily[$key]->total : 0;
         }
 
-        // 4. TOP 5 LAPTOP PALING SERING DIPINJAM
-        $topLaptops = Laptop::withCount('borrowings')
+        // ── 3. TOP LAPTOP PALING SERING DIPINJAM ─────────────────────────
+        $topLaptops = Laptop::withCount(['borrowings' => function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('borrow_date', [$startDate, $endDate]);
+            }])
             ->orderBy('borrowings_count', 'desc')
-            ->limit(5)
+            ->limit(10)
             ->get();
 
-        // 5. TOP 5 PEMINJAM PALING AKTIF
-        $topBorrowers = User::where('role', 'user')
-            ->withCount('borrowings')
-            ->orderBy('borrowings_count', 'desc')
-            ->limit(5)
-            ->get();
-
-        // 6. TABEL DETAIL SEMUA PEMINJAMAN PERIODE
+        // ── 4. TABEL DETAIL PEMINJAMAN ────────────────────────────────────
         $detailBorrowings = Borrowing::with(['user', 'laptop'])
             ->whereBetween('borrow_date', [$startDate, $endDate])
             ->orderBy('borrow_date', 'desc')
-            ->paginate(10)
+            ->paginate(15)
             ->withQueryString();
 
         return view('admin.reports.index', compact(
             'startDate', 'endDate',
-            'totalBorrowings', 'totalReturns', 'totalFines', 'damagedLaptops',
-            'monthlyLabels', 'monthlyValues',
-            'laptopCounts',
-            'topLaptops', 'topBorrowers',
+            'totalBorrowings', 'totalReturns', 'stillBorrowed', 'lateBorrowings',
+            'dayLabels', 'dayValues',
+            'topLaptops',
             'detailBorrowings'
         ));
     }

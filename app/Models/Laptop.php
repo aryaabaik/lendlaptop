@@ -32,4 +32,9 @@ class Laptop extends Model
     {
         return 'LP' . str_pad($this->id, 3, '0', STR_PAD_LEFT);
     }
+
+    public function getCodeAttribute()
+    {
+        return $this->formatted_id;
+    }
 }

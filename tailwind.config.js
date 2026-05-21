@@ -1,21 +1,23 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
-import forms from '@tailwindcss/forms';
-
 /** @type {import('tailwindcss').Config} */
 export default {
     content: [
-        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
-        './storage/framework/views/*.php',
-        './resources/views/**/*.blade.php',
-    ],
-
-    theme: {
-        extend: {
-            fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+    "./resources/**/*.blade.php",
+    "./resources/**/*.js",
+    "./resources/**/*.vue",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        'primary-teal': '#0D9F7A',
+        'navy-navbar': '#0A1628',
+        'status-blue': '#2563EB', // For 'dipinjam' status
+        'status-amber': '#F59E0B', // For 'Menunggu Konfirmasi' and amber progress
+        'status-red': '#EF4444', // For red progress
             },
+      fontFamily: {
+        inter: ['Inter', 'sans-serif'],
         },
     },
-
-    plugins: [forms],
+  },
+  plugins: [],
 };

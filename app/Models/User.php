@@ -26,9 +26,13 @@ class User extends Authenticatable
     'name', 'email', 'password', 'role', 'kelas', 'phone'
     ];
     
-    public function isAdmin(): bool
+    /**
+     * Check if the user has an admin role.
+     * Adjust this logic based on your actual role implementation (e.g., 'role' column, roles relationship).
+     */
+    public function isAdmin()
     {
-        return $this->role === 'admin';
+        return $this->role === 'admin'; // Example: assumes a 'role' column with 'admin' value
     }
 
     public function borrowings()
@@ -43,4 +47,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function notifications() {
+    return $this->hasMany(Notification::class)->latest();
 }
+
+public function unreadNotifications() {
+    return $this->notifications()->where('is_read', false);
+}
+}
+
